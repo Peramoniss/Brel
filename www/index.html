@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translated Lyrics</title>
+<link rel="icon" type="image/x-icon" href="img/favicon-removebg-preview.ico">
+<style>
+:root {
+    --font-family: Georgia, 'Times New Roman', serif;
+    --font-size: 21px;
+    --line-height: 1.8;
+
+    --bg: #faf8f3;
+    --text: #20261f;
+    --muted: #8a8f7d;
+    --accent: #3f6b52;          /* softer, muted green for translated lines */
+    --error: #b3493f;
+    --divider: #ddd7c5;
+    --stripe: rgba(63, 107, 82, 0.07);   /* faint band, interleaved mode only */
+    --panel-bg: rgba(255, 255, 255, 0.9);
+    --panel-border: #e4dfd0;
+    --control-text: #4d5347;
+    --input-bg: #fff;
+    --input-border: #cfc9b6;
+}
+
+[data-theme="dark"] {
+    --bg: #1c1e1a;
+    --text: #e7e5dd;
+    --muted: #8d9286;
+    --accent: #8fbfa1;          /* desaturated mint, legible on dark bg */
+    --error: #e0857a;
+    --divider: #3a3d35;
+    --stripe: rgba(143, 191, 161, 0.08);
+    --panel-bg: rgba(34, 36, 31, 0.88);
+    --panel-border: #3a3d35;
+    --control-text: #c7cbbf;
+    --input-bg: #2a2c26;
+    --input-border: #454841;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.8em;
+    margin: 0 0 2px;
+    color: var(--text);
+    letter-spacing: 0.01em;
+}
+
+.subtitle {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+}
+
+/* ---------- controls ---------- */
+
+.controls {
+    position: sticky;
+    top: 12px;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 12px 20px;
+    margin-bottom: 36px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-group label {
+    color: var(--control-text);
+    font-weight: 600;
+}
+
+select {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.size-control { gap: 6px; }
+
+.step-btn, .icon-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+}
+
+.step-btn:hover, .icon-btn:hover { background: var(--stripe); }
+
+input[type="range"] {
+    width: 110px;
+    accent-color: var(--accent);
+}
+
+#size-label {
+    min-width: 38px;
+    text-align: center;
+    color: var(--control-text);
+    font-variant-numeric: tabular-nums;
+}
+
+#layout-toggle {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 9px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+#layout-toggle:hover { opacity: 0.85; }
+#layout-toggle:active { transform: translateY(1px); }
+
+/* ---------- lyrics ---------- */
+
+.lyrics { margin-top: 8px; }
+
+.original {
+    white-space: pre-wrap;
+    color: var(--text);
+}
+
+.translated {
+    white-space: pre-wrap;
+    color: var(--accent);
+}
+
+[data-translation-style="caps"] .translated { font-variant: small-caps; letter-spacing: 0.03em; }
+[data-translation-style="light"] .translated { font-weight: 300; }
+[data-translation-style="small"] .translated { font-size: 0.85em; }
+[data-translation-style="italic"] .translated { font-style: italic; }
+[data-translation-style="bold"] .translated { font-weight: 700; }
+
+.blank { height: 25px; }
+
+.lyrics.side-by-side .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    padding: 4px 0;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.lyrics.side-by-side .row:hover { background: var(--stripe); }
+
+.lyrics.side-by-side .translated {
+    padding-left: 32px;
+    border-left: 1px solid var(--divider);
+}
+
+.lyrics.interleaved .row {
+    display: block;
+    padding: 9px 14px;
+    margin: 0 -14px 2px;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.lyrics.interleaved .row:nth-of-type(even) { background: var(--stripe); }
+
+.lyrics.interleaved .original,
+.lyrics.interleaved .translated { display: block; }
+
+.lyrics.interleaved .translated { margin-top: 2px; }
+
+.empty-state {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+    padding: 70px 20px;
+}
+
+.site-footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--divider);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.footer-github {
+    display: flex;
+    color: var(--muted);
+    transition: color 0.15s ease;
+}
+
+.footer-github:hover { color: var(--accent); }
+
+@media (max-width: 640px) {
+    .lyrics.side-by-side .row { grid-template-columns: 1fr; gap: 2px; }
+    .lyrics.side-by-side .translated {
+        border-left: none;
+        padding-left: 0;
+        padding-top: 4px;
+        font-size: 0.92em;
+    }
+    .controls { gap: 10px; padding: 10px 14px; }
+}
+
+/* ---------- sidebar ---------- */
+
+.menu-fab {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 25;
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 28px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+.menu-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.25);
+}
+
+.menu-fab:active { transform: translateY(0); }
+
+.menu-fab.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.85);
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 19;
+}
+
+.overlay.visible { opacity: 1; pointer-events: auto; }
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(380px, 88vw);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--panel-border);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+    padding: 22px;
+    z-index: 20;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-family: Arial, sans-serif;
+    overflow-y: auto;
+}
+
+.sidebar.open { transform: translateX(0); }
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-family: var(--font-family);
+    font-size: 1.3em;
+    color: var(--text);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+.field-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.field-row .field { flex: 0 0 auto; }
+.field-row .field.grow { flex: 1 1 auto; min-width: 0; }
+
+.lang-field { flex: 0 0 118px; }
+
+#lang-select {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    padding: 10px 8px;
+    width: 100%;
+}
+
+.field.grow { flex: 1 1 auto; min-height: 0; }
+
+.field label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--control-text);
+}
+
+#title-input, #lyrics-input {
+    font-family: var(--font-family);
+    font-size: 15px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text);
+}
+
+#lyrics-input {
+    flex: 1;
+    min-height: 240px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.primary-btn {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 11px 16px;
+    border-radius: 9px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.primary-btn:hover { opacity: 0.88; }
+.primary-btn:disabled { opacity: 0.6; cursor: progress; }
+
+.sidebar-status {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    margin: 0;
+    min-height: 18px;
+    color: var(--control-text);
+}
+
+.sidebar-status.error { color: var(--error); }
+</style>
+</head>
+<body>
+
+<div id="overlay" class="overlay"></div>
+
+<button type="button" class="menu-fab" id="menu-toggle" aria-label="Open lyrics input panel" aria-expanded="false">&#9776;</button>
+
+<aside id="sidebar" class="sidebar" aria-hidden="true">
+    <div class="sidebar-header">
+        <h2>New lyrics</h2>
+        <button type="button" class="icon-btn" id="sidebar-close" aria-label="Close panel">&times;</button>
+    </div>
+
+    <div class="field-row">
+        <div class="field grow">
+            <label for="title-input">Song title</label>
+            <input type="text" id="title-input" placeholder="e.g. Hurt">
+        </div>
+        <div class="field lang-field">
+            <label for="lang-select">Language</label>
+            <select id="lang-select">
+                <option value="ar">Arabic</option>
+                <option value="zh">Chinese</option>
+                <option value="nl">Dutch</option>
+                <option value="en">English</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="el">Greek</option>
+                <option value="hi">Hindi</option>
+                <option value="it">Italian</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="pl">Polish</option>
+                <option value="pt" selected>Portuguese</option>
+                <option value="ro">Romanian</option>
+                <option value="ru">Russian</option>
+                <option value="es">Spanish</option>
+                <option value="sv">Swedish</option>
+                <option value="tr">Turkish</option>
+                <option value="uk">Ukrainian</option>
+                <option value="vi">Vietnamese</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="field grow">
+        <label for="lyrics-input">Lyrics (original language)</label>
+        <textarea id="lyrics-input" placeholder="Paste the original lyrics here..."></textarea>
+    </div>
+
+    <button type="button" class="primary-btn" id="translate-btn">Translate</button>
+    <p class="sidebar-status" id="sidebar-status" role="status"></p>
+</aside>
+
+<h1 id="song-title">Translated Lyrics</h1>
+<div class="subtitle" id="song-subtitle">Open the panel and paste lyrics to get started</div>
+
+<div class="controls">
+    <div class="control-group">
+        <label for="font-select">Font</label>
+        <select id="font-select">
+            <option value="Georgia, 'Times New Roman', serif" selected>Georgia</option>
+            <option value="Arial, Helvetica, sans-serif">Arial</option>
+            <option value="Verdana, Geneva, sans-serif">Verdana</option>
+            <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+            <option value="'Times New Roman', Times, serif">Times New Roman</option>
+            <option value="'Courier New', Courier, monospace">Courier New</option>
+            <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label for="translation-style">Translation</label>
+        <select id="translation-style">
+            <option value="" selected>Color only</option>
+            <option value="caps">Small caps</option>
+            <option value="light">Lighter weight</option>
+            <option value="small">Smaller size</option>
+            <option value="italic">Italic</option>
+            <option value="bold">Bold</option>
+        </select>
+    </div>
+
+    <div class="control-group size-control">
+        <label for="size-slider">Size</label>
+        <button type="button" class="step-btn" id="size-down" aria-label="Decrease font size">&minus;</button>
+        <input type="range" id="size-slider" min="13" max="32" value="21" step="1">
+        <button type="button" class="step-btn" id="size-up" aria-label="Increase font size">+</button>
+        <span id="size-label">21px</span>
+    </div>
+
+    <button type="button" id="layout-toggle">&#8644; Interleave Lines</button>
+
+    <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch to dark mode">&#127769;</button>
+</div>
+
+<div id="lyrics" class="lyrics side-by-side">
+    <p class="empty-state" id="empty-state">No lyrics yet — open the panel and paste something in.</p>
+</div>
+
+<footer class="site-footer">
+    <a href="https://github.com/peramoniss" target="_blank" rel="noopener noreferrer" class="footer-github" aria-label="GitHub profile">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+    </a>
+    <span>&copy; 2026 Brel. No rights reserved.</span>
+</footer>
+
+<script>
+
+(function () {
+    // ---- configuration ----
+    // The sidebar fields (title, language, lyrics) map onto this request
+    // body, plus one constant the API also expects. Edit if your API uses
+    // a different strategy.
+    const BASE_URL = (location.hostname === "localhost" || location.hostname === "127.0.0.1") ? "http://localhost:8000" : "https://opearatic.onrender.com";
+    var API_URL = `${BASE_URL}/translate/`;
+    var STRATEGY = 'stanza';
+
+    // ---- element refs ----
+    var menuToggle = document.getElementById('menu-toggle');
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('overlay');
+    var sidebarClose = document.getElementById('sidebar-close');
+    var titleInput = document.getElementById('title-input');
+    var langSelect = document.getElementById('lang-select');
+    var lyricsInput = document.getElementById('lyrics-input');
+    var translateBtn = document.getElementById('translate-btn');
+    var sidebarStatus = document.getElementById('sidebar-status');
+    var lyricsEl = document.getElementById('lyrics');
+    var songTitleEl = document.getElementById('song-title');
+    var songSubtitleEl = document.getElementById('song-subtitle');
+    var fontSelect = document.getElementById('font-select');
+    var translationStyleSelect = document.getElementById('translation-style');
+    var sizeSlider = document.getElementById('size-slider');
+    var sizeLabel = document.getElementById('size-label');
+    var sizeDown = document.getElementById('size-down');
+    var sizeUp = document.getElementById('size-up');
+    var layoutBtn = document.getElementById('layout-toggle');
+    var themeToggle = document.getElementById('theme-toggle');
+    var root = document.documentElement;
+
+    var interleaved = false;
+    var dark = false;
+
+    // ---- sidebar open/close ----
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('visible');
+        sidebar.setAttribute('aria-hidden', 'false');
+        menuToggle.setAttribute('aria-expanded', 'true');
+        menuToggle.classList.add('is-hidden');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+        sidebar.setAttribute('aria-hidden', 'true');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.classList.remove('is-hidden');
+    }
+
+    menuToggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) { closeSidebar(); } else { openSidebar(); }
+    });
+    sidebarClose.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // ---- translate ----
+    function setStatus(message, isError) {
+        sidebarStatus.textContent = message || '';
+        sidebarStatus.classList.toggle('error', !!isError);
+    }
+
+    function renderRows(pairs) {
+        lyricsEl.innerHTML = '';
+        pairs.forEach(function (pair) {
+            var original = pair[0] || '';
+            var translated = pair[1] || '';
+
+            if (!original.trim()) {
+                var blank = document.createElement('div');
+                blank.className = 'blank';
+                lyricsEl.appendChild(blank);
+                return;
+            }
+
+            var row = document.createElement('div');
+            row.className = 'row';
+
+            var orig = document.createElement('div');
+            orig.className = 'original';
+            orig.textContent = original;
+
+            var trans = document.createElement('div');
+            trans.className = 'translated';
+            trans.textContent = translated;
+
+            row.appendChild(orig);
+            row.appendChild(trans);
+            lyricsEl.appendChild(row);
+        });
+    }
+
+    translateBtn.addEventListener('click', function () {
+        var lyrics = lyricsInput.value;
+        if (!lyrics.trim()) {
+            setStatus('Paste some lyrics first.', true);
+            return;
+        }
+
+        translateBtn.disabled = true;
+        translateBtn.textContent = 'Translating…';
+        setStatus('Talking to the translation server…', false);
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lyrics: lyrics, lang: langSelect.value, strat: STRATEGY })
+        })
+            .then(function (res) {
+                if (!res.ok) { throw new Error('server responded with ' + res.status); }
+                return res.json();
+            })
+            .then(function (pairs) {
+                var title = titleInput.value.trim() || 'Untitled';
+                var langName = langSelect.options[langSelect.selectedIndex].text;
+                songTitleEl.textContent = title;
+                songSubtitleEl.textContent = 'Translated to ' + langName;
+                renderRows(pairs);
+                setStatus('', false);
+                closeSidebar();
+            })
+            .catch(function (err) {
+                setStatus('Translation failed (' + err.message + '). Check that the API is running at ' + API_URL + ' and allows requests from this page.', true);
+            })
+            .finally(function () {
+                translateBtn.disabled = false;
+                translateBtn.textContent = 'Translate';
+            });
+    });
+
+    // ---- layout toggle ----
+    layoutBtn.addEventListener('click', function () {
+        interleaved = !interleaved;
+        lyricsEl.classList.toggle('interleaved', interleaved);
+        lyricsEl.classList.toggle('side-by-side', !interleaved);
+        layoutBtn.innerHTML = interleaved ? '&#8644; Side by Side' : '&#8644; Interleave Lines';
+    });
+
+    // ---- theme toggle ----
+    themeToggle.addEventListener('click', function () {
+        dark = !dark;
+        if (dark) {
+            root.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '&#9728;';
+            themeToggle.setAttribute('aria-label', 'Switch to light mode');
+        } else {
+            root.removeAttribute('data-theme');
+            themeToggle.innerHTML = '&#127769;';
+            themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+        }
+    });
+
+    // ---- font + translation style ----
+    fontSelect.addEventListener('change', function () {
+        root.style.setProperty('--font-family', fontSelect.value);
+    });
+
+    translationStyleSelect.addEventListener('change', function () {
+        var v = translationStyleSelect.value;
+        if (v) { root.setAttribute('data-translation-style', v); }
+        else { root.removeAttribute('data-translation-style'); }
+    });
+
+    // ---- font size ----
+    function setSize(px) {
+        px = Math.min(32, Math.max(13, px));
+        root.style.setProperty('--font-size', px + 'px');
+        sizeSlider.value = px;
+        sizeLabel.textContent = px + 'px';
+    }
+
+    sizeSlider.addEventListener('input', function () { setSize(parseInt(sizeSlider.value, 10)); });
+    sizeDown.addEventListener('click', function () { setSize(parseInt(sizeSlider.value, 10) - 1); });
+    sizeUp.addEventListener('click', function () { setSize(parseInt(sizeSlider.value, 10) + 1); });
+
+    // open the panel automatically on first load since there's nothing to show yet
+    openSidebar();
+})();
+</script>
+
+</body>
+</html>

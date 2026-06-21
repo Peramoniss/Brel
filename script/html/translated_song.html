@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translated Lyrics for Il peu plevoir</title>
+<style>
+
+:root {
+    --font-family: Georgia, 'Times New Roman', serif;
+    --font-size: 21px;
+    --line-height: 1.8;
+
+    --bg: #faf8f3;
+    --text: #20261f;
+    --muted: #8a8f7d;
+    --accent: #3f6b52;          /* softer, muted green for translated lines */
+    --divider: #ddd7c5;
+    --stripe: rgba(63, 107, 82, 0.07);   /* faint band, interleaved mode only */
+    --panel-bg: rgba(255, 255, 255, 0.9);
+    --panel-border: #e4dfd0;
+    --control-text: #4d5347;
+    --input-bg: #fff;
+    --input-border: #cfc9b6;
+}
+
+[data-theme="dark"] {
+    --bg: #1c1e1a;
+    --text: #e7e5dd;
+    --muted: #8d9286;
+    --accent: #8fbfa1;          /* desaturated mint, legible on dark bg */
+    --divider: #3a3d35;
+    --stripe: rgba(143, 191, 161, 0.08);
+    --panel-bg: rgba(34, 36, 31, 0.88);
+    --panel-border: #3a3d35;
+    --control-text: #c7cbbf;
+    --input-bg: #2a2c26;
+    --input-border: #454841;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.8em;
+    margin: 0 0 2px;
+    color: var(--text);
+    letter-spacing: 0.01em;
+}
+
+.subtitle {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+}
+
+/* ---------- controls ---------- */
+
+.controls {
+    position: sticky;
+    top: 12px;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 12px 20px;
+    margin-bottom: 36px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-group label {
+    color: var(--control-text);
+    font-weight: 600;
+}
+
+select {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.size-control { gap: 6px; }
+
+.step-btn, .icon-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+}
+
+.step-btn:hover, .icon-btn:hover { background: var(--stripe); }
+
+input[type="range"] {
+    width: 110px;
+    accent-color: var(--accent);
+}
+
+#size-label {
+    min-width: 38px;
+    text-align: center;
+    color: var(--control-text);
+    font-variant-numeric: tabular-nums;
+}
+
+#layout-toggle {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 9px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+#layout-toggle:hover { opacity: 0.85; }
+#layout-toggle:active { transform: translateY(1px); }
+
+/* ---------- lyrics ---------- */
+
+.lyrics { margin-top: 8px; }
+
+.original {
+    white-space: pre-wrap;
+    color: var(--text);
+}
+
+.translated {
+    white-space: pre-wrap;
+    color: var(--accent);
+}
+
+/* translation style variants — chosen via the "Translation style" control.
+   Color is always applied above; these add an optional second cue. */
+[data-translation-style="caps"] .translated {
+    font-variant: small-caps;
+    letter-spacing: 0.03em;
+}
+
+[data-translation-style="light"] .translated {
+    font-weight: 300;
+}
+
+[data-translation-style="small"] .translated {
+    font-size: 0.85em;
+}
+
+[data-translation-style="italic"] .translated {
+    font-style: italic;
+}
+
+[data-translation-style="bold"] .translated {
+    font-weight: 700;
+}
+
+.blank { height: 25px; }
+
+/* side-by-side: two plain columns, single vertical rule, no per-row blocks
+   or alternating colors — just clean, even typography */
+.lyrics.side-by-side .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    padding: 4px 0;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.lyrics.side-by-side .row:hover {
+    background: var(--stripe);
+}
+
+.lyrics.side-by-side .translated {
+    padding-left: 32px;
+    border-left: 1px solid var(--divider);
+}
+
+/* interleaved: original above its translation, each couplet getting a
+   faint alternating band so the eye can track pairs — this is the only
+   mode with alternating color */
+.lyrics.interleaved .row {
+    display: block;
+    padding: 9px 14px;
+    margin: 0 -14px 2px;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.lyrics.interleaved .row:nth-of-type(even) {
+    background: var(--stripe);
+}
+
+.lyrics.interleaved .original,
+.lyrics.interleaved .translated {
+    display: block;
+}
+
+.lyrics.interleaved .translated {
+    margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+    .lyrics.side-by-side .row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+    .lyrics.side-by-side .translated {
+        border-left: none;
+        padding-left: 0;
+        padding-top: 4px;
+        font-size: 0.92em;
+    }
+    .controls { gap: 10px; padding: 10px 14px; }
+}
+
+</style>
+</head>
+<body>
+
+<h1>Il peu plevoir</h1>
+<div class="subtitle">Translated from fr to pt</div>
+
+<div class="controls">
+    <div class="control-group">
+        <label for="font-select">Font</label>
+        <select id="font-select">
+            <option value="Georgia, 'Times New Roman', serif" selected>Georgia</option>
+            <option value="Arial, Helvetica, sans-serif">Arial</option>
+            <option value="Verdana, Geneva, sans-serif">Verdana</option>
+            <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+            <option value="'Times New Roman', Times, serif">Times New Roman</option>
+            <option value="'Courier New', Courier, monospace">Courier New</option>
+            <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label for="translation-style">Translation</label>
+        <select id="translation-style">
+            <option value="" selected>Color only</option>
+            <option value="caps">Small caps</option>
+            <option value="light">Lighter weight</option>
+            <option value="small">Smaller size</option>
+            <option value="italic">Italic</option>
+            <option value="bold">Bold</option>
+        </select>
+    </div>
+
+    <div class="control-group size-control">
+        <label for="size-slider">Size</label>
+        <button type="button" class="step-btn" id="size-down" aria-label="Decrease font size">&minus;</button>
+        <input type="range" id="size-slider" min="13" max="32" value="21" step="1">
+        <button type="button" class="step-btn" id="size-up" aria-label="Increase font size">+</button>
+        <span id="size-label">21px</span>
+    </div>
+
+    <button type="button" id="layout-toggle">&#8644; Interleave Lines</button>
+
+    <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch to dark mode">&#127769;</button>
+</div>
+
+<div id="lyrics" class="lyrics side-by-side">
+
+    <div class="row">
+        <div class="original">[Couplet 1]</div>
+        <div class="translated">[Verso 1]</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Derrière la saleté</div>
+        <div class="translated">Atrás da sujeira</div>
+    </div>
+
+    <div class="row">
+        <div class="original">S'étalant devant nous</div>
+        <div class="translated">Espalhando-se diante de nós</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Derrière les yeux plissés</div>
+        <div class="translated">Por trás dos olhos estreitados</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Et les visages mous</div>
+        <div class="translated">E os rostos suaves</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Au-delà de ses mains</div>
+        <div class="translated">Além de suas mãos</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Ouvertes ou fermées</div>
+        <div class="translated">Aberto ou fechado</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Qui se tendent en vain</div>
+        <div class="translated">Quem se esforça em vão</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Ou qui sont poing levé</div>
+        <div class="translated">Ou que têm os punhos levantados</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Plus loin que les frontières</div>
+        <div class="translated">Além das fronteiras</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Qui sont de barbelés</div>
+        <div class="translated">Que são arame farpado</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Plus loin que la misère</div>
+        <div class="translated">Mais longe que a pobreza</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Il nous faut regarder</div>
+        <div class="translated">Precisamos olhar</div>
+    </div>
+<div class="blank"></div>
+
+    <div class="row">
+        <div class="original">[Couplet 2]</div>
+        <div class="translated">[Verso 2]</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Il nous faut regarder</div>
+        <div class="translated">Precisamos olhar</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Ce qu'il y a de beau</div>
+        <div class="translated">O que é lindo</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le ciel gris ou bleuté</div>
+        <div class="translated">O céu cinza ou azulado</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Les filles au bord de l'eau</div>
+        <div class="translated">Meninas à beira da água</div>
+    </div>
+
+    <div class="row">
+        <div class="original">L'ami qu'on sait fidèle</div>
+        <div class="translated">O amigo que sabemos ser fiel</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le soleil de demain</div>
+        <div class="translated">O sol de amanhã</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le vol d'une hirondelle</div>
+        <div class="translated">O vôo de uma andorinha</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le bateau qui revient</div>
+        <div class="translated">O barco que retorna</div>
+    </div>
+
+    <div class="row">
+        <div class="original">L'ami qu'on sait fidèle</div>
+        <div class="translated">O amigo que sabemos ser fiel</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le soleil de demain</div>
+        <div class="translated">O sol de amanhã</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le vol d'une hirondelle</div>
+        <div class="translated">O vôo de uma andorinha</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le bateau qui revient</div>
+        <div class="translated">O barco que retorna</div>
+    </div>
+<div class="blank"></div>
+
+    <div class="row">
+        <div class="original">[Couplet 3]</div>
+        <div class="translated">[Verso 3]</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Par delà le concert</div>
+        <div class="translated">Além do concerto</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Des sanglots et des pleurs</div>
+        <div class="translated">Soluços e lágrimas</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Et des cris de colère</div>
+        <div class="translated">E gritos de raiva</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Des hommes qui ont peur</div>
+        <div class="translated">Homens que têm medo</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Par delà le vacarme</div>
+        <div class="translated">Além do barulho</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Des rues et des chantiers</div>
+        <div class="translated">Ruas e canteiros de obras</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Des sirènes d'alarmes</div>
+        <div class="translated">Sirenes de alarme</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Des jurons de charretiers</div>
+        <div class="translated">Juramentos de carroceiros</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Plus fort que les enfants</div>
+        <div class="translated">Mais forte que as crianças</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Qui racontent les guerres</div>
+        <div class="translated">Quem conta as guerras</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Et plus fort que les grands</div>
+        <div class="translated">E mais forte que os grandes</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Qui nous les ont fait faire</div>
+        <div class="translated">Quem os fez para nós</div>
+    </div>
+<div class="blank"></div>
+
+    <div class="row">
+        <div class="original">[Couplet 4]</div>
+        <div class="translated">[Verso 4]</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Il nous faut écouter</div>
+        <div class="translated">Precisamos ouvir</div>
+    </div>
+
+    <div class="row">
+        <div class="original">L'oiseau au fond des bois</div>
+        <div class="translated">O pássaro nas profundezas da floresta</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le murmure de l'été</div>
+        <div class="translated">O sussurro do verão</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Le sang qui monte en soi</div>
+        <div class="translated">O sangue que sobe dentro de você</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Les berceuses des mères</div>
+        <div class="translated">Canções de ninar da mãe</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Les prières des enfants</div>
+        <div class="translated">Orações infantis</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Et le bruit de la Terre</div>
+        <div class="translated">E o som da Terra</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Qui s'endort doucement</div>
+        <div class="translated">Quem adormece suavemente</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Les berceuses des mères</div>
+        <div class="translated">Canções de ninar da mãe</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Les prières des enfants</div>
+        <div class="translated">Orações infantis</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Et le bruit de la Terre</div>
+        <div class="translated">E o som da Terra</div>
+    </div>
+
+    <div class="row">
+        <div class="original">Qui s'endort doucement</div>
+        <div class="translated">Quem adormece suavemente</div>
+    </div>
+
+</div>
+
+<script>
+
+(function () {
+    var layoutBtn = document.getElementById('layout-toggle');
+    var lyricsEl = document.getElementById('lyrics');
+    var fontSelect = document.getElementById('font-select');
+    var translationStyleSelect = document.getElementById('translation-style');
+    var sizeSlider = document.getElementById('size-slider');
+    var sizeLabel = document.getElementById('size-label');
+    var sizeDown = document.getElementById('size-down');
+    var sizeUp = document.getElementById('size-up');
+    var themeToggle = document.getElementById('theme-toggle');
+    var root = document.documentElement;
+
+    var interleaved = false;
+    var dark = false;
+
+    layoutBtn.addEventListener('click', function () {
+        interleaved = !interleaved;
+        lyricsEl.classList.toggle('interleaved', interleaved);
+        lyricsEl.classList.toggle('side-by-side', !interleaved);
+        layoutBtn.innerHTML = interleaved ? '&#8644; Side by Side' : '&#8644; Interleave Lines';
+    });
+
+    themeToggle.addEventListener('click', function () {
+        dark = !dark;
+        if (dark) {
+            root.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '&#9728;';
+            themeToggle.setAttribute('aria-label', 'Switch to light mode');
+        } else {
+            root.removeAttribute('data-theme');
+            themeToggle.innerHTML = '&#127769;';
+            themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+        }
+    });
+
+    fontSelect.addEventListener('change', function () {
+        root.style.setProperty('--font-family', fontSelect.value);
+    });
+
+    translationStyleSelect.addEventListener('change', function () {
+        var v = translationStyleSelect.value;
+        if (v) {
+            root.setAttribute('data-translation-style', v);
+        } else {
+            root.removeAttribute('data-translation-style');
+        }
+    });
+
+    function setSize(px) {
+        px = Math.min(32, Math.max(13, px));
+        root.style.setProperty('--font-size', px + 'px');
+        sizeSlider.value = px;
+        sizeLabel.textContent = px + 'px';
+    }
+
+    sizeSlider.addEventListener('input', function () {
+        setSize(parseInt(sizeSlider.value, 10));
+    });
+
+    sizeDown.addEventListener('click', function () {
+        setSize(parseInt(sizeSlider.value, 10) - 1);
+    });
+
+    sizeUp.addEventListener('click', function () {
+        setSize(parseInt(sizeSlider.value, 10) + 1);
+    });
+})();
+
+</script>
+
+</body>
+</html>

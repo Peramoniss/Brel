@@ -1,0 +1,5 @@
+langdetect
+deep_translator
+tqdm
+fastapi
+pydantic
