@@ -535,7 +535,7 @@ input[type="range"] {
     // ---- configuration ----
     // The sidebar fields (title, language, lyrics) map onto this request
     // body, plus one constant the API also expects. Edit if your API uses a different strategy.
-    const BASE_URL = (location.hostname === "localhost" || location.hostname === "127.0.0.1") ? "http://localhost:8000" : "https://brel.onrender.com/";
+    const BASE_URL = (location.hostname === "localhost" || location.hostname === "127.0.0.1") ? "http://localhost:8000" : "https://brel.onrender.com";
     var API_URL = `${BASE_URL}/translate/`;
     var STRATEGY = 'stanza';
 
