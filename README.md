@@ -14,7 +14,8 @@ Brel/
 ├── api/ # Python API
 │ ├── src/
 │ │ ├── app.py # FastAPI application
-│ └──── test.py # Quick test script
+│ │ ├── test.py # Quick test script
+│ └────requirements.txt
 │ 
 ├── script/ # Terminal version
 │ ├── html/ # Store HTMLs generated
@@ -22,7 +23,7 @@ Brel/
 │ └── local.py # The terminal app
 │
 ├── index.html # Web app
-├── requirements.txt
+├── 
 └── README.md
 ```
 ---
