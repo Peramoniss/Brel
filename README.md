@@ -1,6 +1,9 @@
 # Brel
 Brel is an automatic song translation system. It is distributed as a terminal app, an API, and a webpage. The name references Jacques Brel, who inspired the development of this app.
 
+## Known Limitations
+Since the project is built upon free of charge software, multiple languages are not supported, including Romaji in Japanese. Try finding the lyrics in Kanji instead.
+
 ## 📁 Project Structure
 The project is split into:
 - a **static front-end** (GitHub Pages)
@@ -14,7 +17,7 @@ Brel/
 ├── api/ # Python API
 │ ├── src/
 │ │ ├── app.py # FastAPI application
-│ │ ├── test.py # Quick test script
+│ ├ ├── test.py # Quick test script
 │ └────requirements.txt
 │ 
 ├── script/ # Terminal version
@@ -22,8 +25,9 @@ Brel/
 │ ├── originals/ # Stores txt files with song lyrics
 │ └── local.py # The terminal app
 │
-├── index.html # Web app
-├── 
+├── www/
+│└──index.html # Web app 
+│
 └── README.md
 ```
 ---
@@ -42,13 +46,13 @@ This allows:
 ## API Version
 
 - Built with **FastAPI library**
-- Deployed on [Render](https://opearatic.onrender.com)
+- Deployed on [Render](https://brel.onrender.com)
 
 ### Endpoints
 
 - POST /translate/
 
-More detailed information on the api on https://opearatic.onrender.com/docs.
+More detailed information on the api on https://brel.onrender.com/docs.
 
 ### 🔐 CORS
 
@@ -57,7 +61,7 @@ The API only allows requests from:
 `https://peramoniss.github.io`
 
 
-This prevents unauthorized usage while keeping the frontend functional. For that to work, the Render environment has the variable `ENV: PROD`. Changing to `DEV` allows requests from localhosts.  
+This prevents unauthorized usage while keeping the frontend functional.
 
 ## Web app Version
 - built upon the api

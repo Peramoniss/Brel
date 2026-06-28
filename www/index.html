@@ -537,7 +537,7 @@ input[type="range"] {
     // body, plus one constant the API also expects. Edit if your API uses a different strategy.
     const BASE_URL = (location.hostname === "localhost" || location.hostname === "127.0.0.1") ? "http://localhost:8000" : "https://brel.onrender.com";
     var API_URL = `${BASE_URL}/translate/`;
-    var STRATEGY = 'stanza';
+    var DEFAULT_STRATEGY = 'stanza';
 
     // ---- element refs ----
     var menuToggle = document.getElementById('menu-toggle');
@@ -638,7 +638,7 @@ input[type="range"] {
         fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lyrics: lyrics, lang: langSelect.value, strat: STRATEGY })
+            body: JSON.stringify({ lyrics: lyrics, lang: langSelect.value, strat: DEFAULT_STRATEGY })
         })
             .then(function (res) {
                 if (!res.ok) { throw new Error('server responded with ' + res.status); }
